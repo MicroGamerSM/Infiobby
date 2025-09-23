@@ -23,11 +23,24 @@ export function canModify(base: Polarity, modifier: Polarity): boolean {
 	if (base === modifier) return false;
 	return true;
 }
+export function modifyPolarity(base: Polarity, modifier: Polarity): Polarity {
+	// If base is NONE, adopt the modifier
+	if (base === Polarity.NONE) return modifier;
+
+	// If modifier is NONE, keep the base
+	if (modifier === Polarity.NONE) return base;
+
+	// If both are the same, keep the base
+	if (base === modifier) return base;
+
+	// If they are opposite, cancel out
+	return Polarity.NONE;
+}
 
 export function PullTile(currentPolarity: Polarity, tileset: [Tile]): [Polarity, Tile] {
 	const tile = tileset[math.floor(math.random() * tileset.size())];
 	if (canModify(currentPolarity, tile.polarity)) {
-		return [tile.polarity === Polarity.NONE ? currentPolarity : tile.polarity, tile];
+		return [modifyPolarity(currentPolarity, tile.polarity), tile];
 	} else {
 		return PullTile(currentPolarity, tileset);
 	}
