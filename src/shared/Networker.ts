@@ -326,6 +326,14 @@ export class EventV2<ClientToServer, ServerToClient> {
 	}
 
 	/**
+	 * Fires the remove event for all clients.
+	 * @param args The data to pass to the client.
+	 */
+	FireAllClients(...args: Arguments<ServerToClient>) {
+		this.remote.FireAllClients(...args);
+	}
+
+	/**
 	 * Detects when the server fires the client.
 	 * @param callback The function that handles the data.
 	 * @returns An unlinker to disconnect the callback.
