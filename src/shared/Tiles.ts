@@ -23,6 +23,7 @@ export function canModify(base: Polarity, modifier: Polarity): boolean {
 	if (base === modifier) return false;
 	return true;
 }
+
 export function modifyPolarity(base: Polarity, modifier: Polarity): Polarity {
 	// If base is NONE, adopt the modifier
 	if (base === Polarity.NONE) return modifier;
