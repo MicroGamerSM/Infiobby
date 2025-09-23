@@ -555,6 +555,7 @@ export class Bridge<Send, Recieve> {
  * ✅ S/C A -> S/C B -> S/C A
  */
 
+/*
 if (isServer) {
 	// NetworkerV1
 	Function.RequestNewFunctionFunction.OnServerInvoke((player, token) => {
@@ -564,3 +565,4 @@ if (isServer) {
 		return [Event.GetEvent(token).remoteEvent];
 	});
 }
+*/
