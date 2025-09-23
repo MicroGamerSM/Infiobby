@@ -326,6 +326,17 @@ export class EventV2<ClientToServer, ServerToClient> {
 	}
 
 	/**
+	 * Fires the event for a list of clients.
+	 * @param clients The clients to fire the evet for.
+	 * @param args The data to pass to the clients.
+	 */
+	FireClients(clients: Player[], ...args: Arguments<ServerToClient>) {
+		clients.forEach((client) => {
+			this.remote.FireClient(client, ...args);
+		});
+	}
+
+	/**
 	 * Fires the remove event for all clients.
 	 * @param args The data to pass to the client.
 	 */
