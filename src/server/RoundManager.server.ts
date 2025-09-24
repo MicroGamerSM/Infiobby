@@ -23,6 +23,7 @@ class RoundManager {
 		this.activePlayers = players;
 		RoundStartedEvent.FireAllClients();
 		TeleportedIntoRoundEvent.FireClients(this.activePlayers);
+		print("change");
 	}
 
 	constructor(spawn: BasePart, start: BasePart) {
