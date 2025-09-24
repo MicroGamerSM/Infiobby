@@ -56,7 +56,7 @@ export function modifyPolarity(base: Polarity, modifier: Polarity): Polarity {
 	return Polarity.NONE;
 }
 
-export function PullTile(currentPolarity: Polarity, tileset: [Tile]): [Polarity, Tile] {
+export function PullTile(currentPolarity: Polarity, tileset: TilePool): [Polarity, Tile] {
 	const tile = tileset[math.floor(math.random() * tileset.size())];
 	if (canModify(currentPolarity, tile.polarity)) {
 		return [modifyPolarity(currentPolarity, tile.polarity), tile];
@@ -66,3 +66,5 @@ export function PullTile(currentPolarity: Polarity, tileset: [Tile]): [Polarity,
 }
 
 export const tiles = [new Tile("Jumps", 4)];
+
+export type TilePool = Tile[];
