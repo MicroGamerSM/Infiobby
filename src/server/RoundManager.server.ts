@@ -1,4 +1,5 @@
 import { EventV2 } from "shared/Networker";
+import { TileSpawner } from "./TileSpawner";
 
 // Inform all players that the round has started.
 const RoundStartedEvent: EventV2<undefined, undefined> = EventV2.Get("RoundStarted");
@@ -9,13 +10,12 @@ const RoundEndEvent: EventV2<undefined, undefined> = EventV2.Get("RoundEnded");
 
 class RoundManager {
 	activePlayers: Player[] = [];
-	spawnPart: BasePart;
-	startPart: BasePart;
-	generationBeginPoint: BasePart;
+	spawn: BasePart;
+	spawner: TileSpawner;
 
 	TeleportPlayers() {
 		this.activePlayers.forEach((player) => {
-			player.Character?.MoveTo(this.spawnPart.Position);
+			player.Character?.PivotTo(this.spawn.CFrame);
 			TeleportedIntoRoundEvent.FireClient(player);
 		});
 	}
@@ -26,9 +26,8 @@ class RoundManager {
 		this.TeleportPlayers();
 	}
 
-	constructor(spawn: BasePart, start: BasePart) {
-		this.spawnPart = spawn;
-		this.startPart = start;
-		this.generationBeginPoint = start;
+	constructor(spawn: BasePart, spawner: TileSpawner) {
+		this.spawn = spawn;
+		this.spawner = spawner;
 	}
 }
