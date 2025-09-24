@@ -9,7 +9,7 @@ export class Tile {
 	weight: number;
 	polarity: Polarity;
 
-	Setup(): Model {
+	Initialize(): Model {
 		const part = this.component.Clone();
 		const module: Possible<ModuleScript> = part.FindFirstChildOfClass("ModuleScript");
 		if (module !== undefined) {

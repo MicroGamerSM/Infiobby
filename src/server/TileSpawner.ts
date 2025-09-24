@@ -72,12 +72,12 @@ export class TileSpawner {
 	private SpawnRandomTile() {
 		const [newPolarity, tileRef] = PullTile(this.polarity, this.tilePool);
 		this.polarity = newPolarity;
-		const tile: Model = tileRef.Setup();
+		const tile: Model = tileRef.Initialize();
 		this.SpawnTile(tile);
 	}
 
 	private SpawnCheckpoint() {
-		this.SpawnTile(this.checkpoint.Setup());
+		this.SpawnTile(this.checkpoint.Initialize());
 	}
 
 	AddTileToQueue() {
