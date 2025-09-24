@@ -1,12 +1,28 @@
+import { Possible } from "./types";
+
+const ComponentsFolder = game.Workspace.FindFirstChild("Parts");
+
 export class Tile {
-	name: string;
+	component: Model;
 	// friendlyName: string;
 	// description: string;
 	weight: number;
 	polarity: Polarity;
 
+	Setup() {
+		const module: Possible<ModuleScript> = this.component.FindFirstChildOfClass("ModuleScript");
+		if (module !== undefined) {
+			// eslint breaks here.
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
+			const setup: unknown = require(module);
+			if (typeIs(setup, "function")) {
+				setup();
+			}
+		}
+	}
+
 	constructor(name: string, weight: number, polarity: Polarity = Polarity.NONE) {
-		this.name = name;
+		this.component = (ComponentsFolder?.FindFirstChild(name) as Model) ?? error(`could not find ${name}`);
 		this.weight = weight;
 		this.polarity = polarity;
 	}
