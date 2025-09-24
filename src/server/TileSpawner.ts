@@ -33,7 +33,7 @@ export class TileSpawner {
 		this.currentStart = this.origin;
 	}
 
-	AddTile() {
+	private SpawnTile() {
 		const [newPolarity, tileRef] = PullTile(this.polarity, this.tilePool);
 		this.polarity = newPolarity;
 		const tile: Model = tileRef.Setup();
