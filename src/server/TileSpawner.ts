@@ -1,15 +1,20 @@
+import { Polarity } from "shared/Tiles";
+
 export class TileSpawner {
 	checkpointAndLevelSpawnTogether: boolean = false;
 	timeToRise: number;
 	timetoStay: number;
 	timeToFall: number;
 
-	private origin: CFrame;
+	origin: CFrame;
 	private currentStart: CFrame;
+	private polarity: Polarity;
 
 	Reset() {
 		this.currentStart = this.origin;
 	}
+
+	AddTileAsync() {}
 
 	constructor(
 		checkpointAndLevelSpawnTogether: boolean,
@@ -24,5 +29,7 @@ export class TileSpawner {
 		this.timeToFall = timeToFall;
 		this.origin = origin;
 		this.currentStart = origin;
+
+		this.polarity = Polarity.NONE;
 	}
 }
