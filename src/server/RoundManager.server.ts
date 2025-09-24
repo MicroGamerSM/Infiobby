@@ -9,6 +9,15 @@ const RoundEndEvent: EventV2<undefined, undefined> = EventV2.Get("RoundEnded");
 
 class RoundManager {
 	activePlayers: Player[] = [];
+	spawnPart: BasePart;
+	startPart: BasePart;
+	generationBeginPoint: BasePart;
+
+	TeleportPlayers() {
+		this.activePlayers.forEach((player) => {
+			player.Character?.MoveTo(this.spawnPart.Position);
+		});
+	}
 
 	StartRound(players: Player[]) {
 		this.activePlayers = players;
@@ -16,5 +25,9 @@ class RoundManager {
 		TeleportedIntoRoundEvent.FireClients(this.activePlayers);
 	}
 
-	constructor() {}
+	constructor(spawn: BasePart, start: BasePart) {
+		this.spawnPart = spawn;
+		this.startPart = start;
+		this.generationBeginPoint = start;
+	}
 }
