@@ -9,8 +9,9 @@ export class Tile {
 	weight: number;
 	polarity: Polarity;
 
-	Setup() {
-		const module: Possible<ModuleScript> = this.component.FindFirstChildOfClass("ModuleScript");
+	Setup(): Model {
+		const part = this.component.Clone();
+		const module: Possible<ModuleScript> = part.FindFirstChildOfClass("ModuleScript");
 		if (module !== undefined) {
 			// eslint breaks here.
 			// eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -19,6 +20,7 @@ export class Tile {
 				setup();
 			}
 		}
+		return part;
 	}
 
 	constructor(name: string, weight: number, polarity: Polarity = Polarity.NONE) {
