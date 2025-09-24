@@ -56,8 +56,29 @@ export function modifyPolarity(base: Polarity, modifier: Polarity): Polarity {
 	return Polarity.NONE;
 }
 
+function getRandomWeightedTile(tiles: Tile[]): Tile | undefined {
+	const totalWeight = tiles.reduce((sum, tile) => sum + tile.weight, 0);
+	if (totalWeight === 0) return undefined; // no tiles or all weights zero
+
+	// pick a random number between 0 and totalWeight
+	let rnd = math.random() * totalWeight;
+
+	for (const tile of tiles) {
+		rnd -= tile.weight;
+		if (rnd <= 0) {
+			return tile;
+		}
+	}
+
+	// fallback (should not happen)
+	return tiles[tiles.size() - 1];
+}
+
 export function PullTile(currentPolarity: Polarity, tileset: TilePool): [Polarity, Tile] {
-	const tile = tileset[math.floor(math.random() * tileset.size())];
+	const tile = getRandomWeightedTile(tileset);
+	if (tile === undefined) {
+		error("undefined tile");
+	}
 	if (canModify(currentPolarity, tile.polarity)) {
 		return [modifyPolarity(currentPolarity, tile.polarity), tile];
 	} else {
