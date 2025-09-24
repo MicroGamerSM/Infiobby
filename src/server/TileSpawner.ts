@@ -8,12 +8,14 @@ export class TileSpawner {
 	timetoStay: number;
 	timeToFall: number;
 
+	origin: CFrame;
+
 	private riseTweenInfo: TweenInfo;
 	private fallTweenInfo: TweenInfo;
 
-	origin: CFrame;
 	private currentStart: CFrame;
 	private polarity: Polarity;
+	private queuedTiles: number;
 
 	tilePool: TilePool;
 
@@ -31,6 +33,7 @@ export class TileSpawner {
 
 	Reset() {
 		this.currentStart = this.origin;
+		this.polarity = Polarity.NONE;
 	}
 
 	private SpawnTile() {
@@ -49,6 +52,25 @@ export class TileSpawner {
 		task.wait(this.timetoStay);
 		const fallTween = this.CreateFallTween(tile.PrimaryPart!, underCFrame);
 		fallTween.Play();
+
+		task.spawn(() => {
+			riseTween.Completed.Wait();
+			task.wait(this.timetoStay);
+
+			const fallTween = this.CreateFallTween(tile.PrimaryPart!, underCFrame);
+			fallTween.Play();
+		});
+	}
+
+	AddTileToQueue() {
+		this.queuedTiles++;
+	}
+
+	AddQueuedTiles() {
+		while (this.queuedTiles > 0) {
+			this.SpawnTile();
+			this.queuedTiles--;
+		}
 	}
 
 	constructor(
@@ -66,9 +88,10 @@ export class TileSpawner {
 		this.tilePool = tilePool;
 
 		this.origin = origin;
-		this.currentStart = origin;
 
+		this.currentStart = origin;
 		this.polarity = Polarity.NONE;
+		this.queuedTiles = 0;
 
 		this.riseTweenInfo = new TweenInfo(this.timeToRise, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
 		this.fallTweenInfo = new TweenInfo(this.timeToFall, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
