@@ -16,14 +16,14 @@ class RoundManager {
 	TeleportPlayers() {
 		this.activePlayers.forEach((player) => {
 			player.Character?.MoveTo(this.spawnPart.Position);
+			TeleportedIntoRoundEvent.FireClient(player);
 		});
 	}
 
 	StartRound(players: Player[]) {
 		this.activePlayers = players;
 		RoundStartedEvent.FireAllClients();
-		TeleportedIntoRoundEvent.FireClients(this.activePlayers);
-		print("change");
+		this.TeleportPlayers();
 	}
 
 	constructor(spawn: BasePart, start: BasePart) {
@@ -32,5 +32,3 @@ class RoundManager {
 		this.generationBeginPoint = start;
 	}
 }
-
-warn("this changed");
