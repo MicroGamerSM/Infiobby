@@ -1,9 +1,9 @@
-import { Polarity, PullTile, TilePool } from "shared/Tiles";
+import { Polarity, PullTile, Tile, TilePool } from "shared/Tiles";
 
 const TweenService = game.GetService("TweenService");
 
 export class TileSpawner {
-	checkpointAndLevelSpawnTogether: boolean = false;
+	checkpointRiseDelay: number;
 	timeToRise: number;
 	timetoStay: number;
 	timeToFall: number;
@@ -17,7 +17,10 @@ export class TileSpawner {
 	private polarity: Polarity;
 	private queuedTiles: number;
 
+	private tiles: Model[];
+
 	tilePool: TilePool;
+	checkpoint: Tile;
 
 	private CreateRiseTween(part: BasePart, goal: CFrame): Tween {
 		return TweenService.Create(part, this.riseTweenInfo, {
@@ -34,17 +37,19 @@ export class TileSpawner {
 	Reset() {
 		this.currentStart = this.origin;
 		this.polarity = Polarity.NONE;
+		this.tiles.forEach((tile) => {
+			tile.Destroy();
+		});
+		this.tiles = [];
 	}
 
-	private SpawnTile() {
-		const [newPolarity, tileRef] = PullTile(this.polarity, this.tilePool);
-		this.polarity = newPolarity;
-		const tile: Model = tileRef.Setup();
-
+	private SpawnTile(tile: Model) {
 		const underCFrame = this.currentStart.add(new Vector3(0, -50, 0));
 		const aboveCFrame = this.currentStart;
 
+		this.tiles.push(tile);
 		tile.PivotTo(underCFrame);
+		tile.Parent = game.Workspace;
 
 		const riseTween = this.CreateRiseTween(tile.PrimaryPart!, aboveCFrame);
 		riseTween.Play();
@@ -59,7 +64,20 @@ export class TileSpawner {
 
 			const fallTween = this.CreateFallTween(tile.PrimaryPart!, underCFrame);
 			fallTween.Play();
+			const indexes = this.tiles.map((model, index) => (model === tile ? index : undefined)).filterUndefined();
+			indexes.forEach((index) => this.tiles.unorderedRemove(index));
 		});
+	}
+
+	private SpawnRandomTile() {
+		const [newPolarity, tileRef] = PullTile(this.polarity, this.tilePool);
+		this.polarity = newPolarity;
+		const tile: Model = tileRef.Setup();
+		this.SpawnTile(tile);
+	}
+
+	private SpawnCheckpoint() {
+		this.SpawnTile(this.checkpoint.Setup());
 	}
 
 	AddTileToQueue() {
@@ -68,23 +86,24 @@ export class TileSpawner {
 
 	AddQueuedTiles() {
 		while (this.queuedTiles > 0) {
-			this.SpawnTile();
+			this.SpawnRandomTile();
+			this.SpawnCheckpoint();
 			this.queuedTiles--;
 		}
 	}
 
 	constructor(
-		checkpointAndLevelSpawnTogether: boolean,
-		timeToRise: number,
-		timeToStay: number,
-		timeToFall: number,
 		origin: CFrame,
 		tilePool: TilePool,
+		timeToRise: number = 1.5,
+		timeToStay: number = 3,
+		timeToFall: number = 1.5,
+		checkpointRiseDelay: number = 0,
 	) {
-		this.checkpointAndLevelSpawnTogether = checkpointAndLevelSpawnTogether;
 		this.timeToRise = timeToRise;
 		this.timetoStay = timeToStay;
 		this.timeToFall = timeToFall;
+		this.checkpointRiseDelay = checkpointRiseDelay;
 		this.tilePool = tilePool;
 
 		this.origin = origin;
@@ -95,5 +114,8 @@ export class TileSpawner {
 
 		this.riseTweenInfo = new TweenInfo(this.timeToRise, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
 		this.fallTweenInfo = new TweenInfo(this.timeToFall, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
+
+		this.tiles = [];
+		this.checkpoint = new Tile("Checkpoint", 0, Polarity.NONE);
 	}
 }
