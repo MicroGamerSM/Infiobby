@@ -32,3 +32,5 @@ class RoundManager {
 		this.generationBeginPoint = start;
 	}
 }
+
+warn("this changed");
