@@ -95,9 +95,9 @@ export class TileSpawner {
 	constructor(
 		origin: CFrame,
 		tilePool: TilePool,
-		timeToRise: number = 1.5,
+		timeToRise: number = 0.5,
 		timeToStay: number = 3,
-		timeToFall: number = 1.5,
+		timeToFall: number = 2,
 		checkpointRiseDelay: number = 0,
 	) {
 		this.timeToRise = timeToRise;
