@@ -6,7 +6,7 @@ export function WaitUntil(predicate: () => boolean) {
 	}
 }
 
-export function getPlayersInZone(zone: BasePart): Player[] {
+export function GetPlayersInZone(zone: BasePart): Player[] {
 	const playersInside: Player[] = [];
 
 	// Must have CanTouch = true for GetTouchingParts to work
