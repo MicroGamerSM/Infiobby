@@ -1,4 +1,4 @@
-import { EventV2 } from "shared/Networker";
+import { Bridge, EventV2 } from "shared/Networker";
 import { TileSpawner } from "./TileSpawner";
 
 // Inform all players that the round has started.
@@ -7,23 +7,43 @@ const RoundStartedEvent: EventV2<undefined, undefined> = EventV2.Get("RoundStart
 const TeleportedIntoRoundEvent: EventV2<undefined, undefined> = EventV2.Get("TeleportedIntoRound");
 // Inform all players that the round has ended.
 const RoundEndEvent: EventV2<undefined, undefined> = EventV2.Get("RoundEnded");
+// Know when a player hits a checkpoint (checkpoint hit is server-side)
+const CheckpointHitBridge: Bridge<[Player, Model], undefined> = Bridge.Get("CheckpointHit");
 
-class RoundManager {
+export class RoundManager {
 	activePlayers: Player[] = [];
 	spawn: BasePart;
 	spawner: TileSpawner;
 
-	TeleportPlayers() {
-		this.activePlayers.forEach((player) => {
+	private active: boolean = false;
+	private hitCheckpoints: Model[] = [];
+
+	InitializePlayers(players: Player[]) {
+		players.forEach((player) => {
+			const index = this.activePlayers.push(player);
 			player.Character?.PivotTo(this.spawn.CFrame);
 			TeleportedIntoRoundEvent.FireClient(player);
+			player.GetPropertyChangedSignal("Parent").Once(() => {
+				this.activePlayers.remove(index);
+			});
+
+			player.GetPropertyChangedSignal("Character").Once(() => {
+				this.activePlayers.remove(index);
+			});
 		});
 	}
 
 	StartRound(players: Player[]) {
-		this.activePlayers = players;
+		this.InitializePlayers(players);
 		RoundStartedEvent.FireAllClients();
-		this.TeleportPlayers();
+
+		this.active = true;
+
+		CheckpointHitBridge.SetCrossCallback((player: Player, checkpoint: Model) => {
+			print(`${player} hit a checkpoint!`);
+			this.hitCheckpoints.push(checkpoint);
+			this.spawner.AddTileToQueue();
+		});
 	}
 
 	constructor(spawn: BasePart, spawner: TileSpawner) {
