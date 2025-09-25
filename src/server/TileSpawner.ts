@@ -80,8 +80,8 @@ export class TileSpawner {
 		this.SpawnTile(this.checkpoint.Initialize());
 	}
 
-	AddTileToQueue() {
-		this.queuedTiles++;
+	AddTileToQueue(count: number = 1) {
+		this.queuedTiles += count;
 	}
 
 	AddQueuedTiles() {
