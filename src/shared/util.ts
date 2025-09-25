@@ -24,3 +24,12 @@ export function GetPlayersInZone(zone: BasePart): Player[] {
 
 	return playersInside;
 }
+
+export function removeFromArray<T extends defined>(array: T[], item: T) {
+	const index = array.indexOf(item);
+	if (index !== -1) {
+		const lastIndex = array.size() - 1;
+		array[index] = array[lastIndex]; // swap with last element
+		array.pop(); // remove last element
+	}
+}
