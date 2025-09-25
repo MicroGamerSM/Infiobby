@@ -1,3 +1,4 @@
+import { RemoveFromArray } from "shared/util";
 import { TileSpawner } from "./TileSpawner";
 
 const Players = game.GetService("Players");
@@ -75,7 +76,12 @@ export class RoundManager {
 	private enterStarting() {
 		this.activePlayers.forEach((player) => {
 			this.rewards.set(player, { xp: 5, credits: 1, firstCheckpoints: 0 });
-			this.autodisconnect(player.GetPropertyChangedSignal("Parent").Once(() => {}));
+			this.autodisconnect(
+				player.GetPropertyChangedSignal("Parent").Once(() => {
+					RemoveFromArray(this.activePlayers, player);
+					this.onPlayerCountReduced();
+				}),
+			);
 		});
 		this.spawner.AddTileToQueue(5);
 	}
