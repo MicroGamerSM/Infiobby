@@ -81,8 +81,6 @@ export class RoundManager {
 					RemoveFromArray(this.activePlayers, player);
 					this.onPlayerCountReduced();
 				}),
-			);
-			this.autodisconnect(
 				player.CharacterRemoving.Once(() => {
 					RemoveFromArray(this.activePlayers, player);
 					this.onPlayerCountReduced();
