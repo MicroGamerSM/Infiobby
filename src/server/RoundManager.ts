@@ -82,6 +82,12 @@ export class RoundManager {
 					this.onPlayerCountReduced();
 				}),
 			);
+			this.autodisconnect(
+				player.CharacterRemoving.Once(() => {
+					RemoveFromArray(this.activePlayers, player);
+					this.onPlayerCountReduced();
+				}),
+			);
 		});
 		this.spawner.AddTileToQueue(5);
 	}
