@@ -9,7 +9,7 @@ export type RoundSignal = [];
 export class RoundState implements IState<RoundContext, RoundSignal> {
 	context: Possible<RoundContext>;
 
-	onEnter(source: Possible<IState<RoundContext, RoundSignal>>, context: RoundContext): void {}
+	onEnter(source: Possible<IState<RoundContext, RoundSignal>>): void {}
 
 	onExit(target: IState<RoundContext, RoundSignal>): void {}
 
@@ -20,7 +20,7 @@ export class RoundState implements IState<RoundContext, RoundSignal> {
 	Enter(source: Possible<IState<RoundContext, RoundSignal>>, context: []): void {
 		print(`Entering from state ${source}`);
 		this.context = context;
-		this.onEnter(source, context);
+		this.onEnter(source);
 	}
 
 	Exit(target: IState<RoundContext, RoundSignal>): void {

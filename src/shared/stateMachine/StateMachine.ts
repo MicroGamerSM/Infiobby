@@ -10,8 +10,8 @@ export class StateMachine<context, signal extends unknown[]> {
 		if (newState === this.currentState) {
 			return;
 		}
-		this.currentState?.onExit(newState);
-		newState.onEnter(this.currentState, this.context);
+		this.currentState?.Exit(newState);
+		newState.Enter(this.currentState, this.context);
 		this.currentState = newState;
 	}
 
