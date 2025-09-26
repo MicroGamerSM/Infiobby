@@ -114,8 +114,10 @@ export class RoundManager {
 	//#endregion
 
 	//#region Other
-	private autodisconnect(connection: RBXScriptConnection) {
-		this.disconnectOnReset.push(connection);
+	private autodisconnect(...connections: RBXScriptConnection[]) {
+		connections.forEach((connection) => {
+			this.disconnectOnReset.push(connection);
+		});
 	}
 
 	onPlayerCountReduced() {
