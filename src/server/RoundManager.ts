@@ -89,10 +89,14 @@ export class RoundManager {
 				}),
 			);
 		});
-		this.spawner.AddTileToQueue(5);
 	}
 	/** Enter RUNNING */
-	private enterRunning() {}
+	private enterRunning() {
+		this.spawner.AddTileToQueue(5);
+		this.spawner.ConnectToCheckpoint((player: Player, checkpoint: Model) => {
+			print(`${player} hit a checkpoint!`);
+		});
+	}
 	/** Enter ENDING */
 	private enterEnding() {
 		this.rewards.forEach((reward, player) => {

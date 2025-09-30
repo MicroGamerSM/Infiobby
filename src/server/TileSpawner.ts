@@ -1,6 +1,9 @@
 import { Polarity, PullTile, Tile, TilePool } from "shared/Tiles";
+import { RemoveFromArray } from "shared/util";
 
 const TweenService = game.GetService("TweenService");
+
+export type CheckpointHitArguments = [Player, Model];
 
 export class TileSpawner {
 	checkpointRiseDelay: number;
@@ -18,9 +21,17 @@ export class TileSpawner {
 	private queuedTiles: number;
 
 	private tiles: Model[];
+	private onCheckpointConnections: ((...args: CheckpointHitArguments) => void)[] = [];
 
 	tilePool: TilePool;
 	checkpoint: Tile;
+
+	public ConnectToCheckpoint(connection: (...args: CheckpointHitArguments) => void): () => void {
+		this.onCheckpointConnections.push(connection);
+		return () => {
+			RemoveFromArray(this.onCheckpointConnections, connection);
+		};
+	}
 
 	private CreateRiseTween(part: BasePart, goal: CFrame): Tween {
 		return TweenService.Create(part, this.riseTweenInfo, {
@@ -41,6 +52,7 @@ export class TileSpawner {
 			tile.Destroy();
 		});
 		this.tiles = [];
+		this.onCheckpointConnections = [];
 	}
 
 	private SpawnTile(tile: Model) {
