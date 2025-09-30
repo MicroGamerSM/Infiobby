@@ -1,6 +1,7 @@
 import { Possible } from "./types";
 
 const Players = game.GetService("Players");
+const TextService = game.GetService("TextService");
 
 export function WaitUntil(predicate: () => boolean) {
 	while (!predicate()) {
@@ -85,4 +86,12 @@ export function StringToPlayer(player: string): Possible<Player> {
 	}
 
 	return undefined;
+}
+
+export function CensorString(source: Player, target: Player, value: string): string {
+	return TextService.FilterStringAsync(
+		value,
+		source.UserId,
+		Enum.TextFilterContext.PrivateChat,
+	).GetNonChatStringForUserAsync(target.UserId);
 }
