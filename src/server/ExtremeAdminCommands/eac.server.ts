@@ -31,6 +31,7 @@ Players.PlayerAdded.Connect((player) => {
 		const data = message.split(" ");
 		const command = data.remove(0);
 		if (command === undefined) return;
+		// eslint-disable-next-line roblox-ts/lua-truthiness
 		if (!StartsWith(command, prefix)) return;
 		HandleCommand(player, RemovePrefix(command, prefix), ...data);
 	});
