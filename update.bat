@@ -1,5 +1,5 @@
 set BRANCH=%1
-if "%BRANCH%"=="" set BRANCH=development
+if "%BRANCH%"=="" set BRANCH=master
 
 git checkout %BRANCH% || (
    -echo Failed to checkout branch %BRANCH%.
