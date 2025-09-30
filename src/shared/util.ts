@@ -1,3 +1,5 @@
+import { Possible } from "./types";
+
 const Players = game.GetService("Players");
 
 export function WaitUntil(predicate: () => boolean) {
@@ -32,4 +34,55 @@ export function RemoveFromArray<T extends defined>(array: T[], item: T) {
 		array[index] = array[lastIndex]; // swap with last element
 		array.pop(); // remove last element
 	}
+}
+
+export function StartsWith(str: string, prefix: string): boolean {
+	return str.sub(1, prefix.size()) === prefix;
+}
+
+export function RemovePrefix(str: string, prefix: string): string {
+	if (str.sub(1, prefix.size()) === prefix) {
+		return str.sub(prefix.size() + 1);
+	}
+	return str;
+}
+
+/**
+ * If the string starts with nothing, "D-" (not case sensitive), searches display names. "U-" searches usernames, and "I-" searches IDs.
+ * @param player The string to look for a player with.
+ * @returns The player found.
+ */
+export function StringToPlayer(player: string): Possible<Player> {
+	// Normalize prefix
+	const upper = player.upper();
+	let search = player;
+	let mode: "display" | "username" | "id" = "display";
+
+	if (upper.sub(1, 2) === "D-") {
+		mode = "display";
+		search = player.sub(3); // remove "D-"
+	} else if (upper.sub(1, 2) === "U-") {
+		mode = "username";
+		search = player.sub(3); // remove "U-"
+	} else if (upper.sub(1, 2) === "I-") {
+		mode = "id";
+		search = player.sub(3); // remove "I-"
+	}
+
+	for (const p of Players.GetPlayers()) {
+		if (mode === "display" && p.DisplayName.lower() === search.lower()) {
+			return p;
+		}
+		if (mode === "username" && p.Name.lower() === search.lower()) {
+			return p;
+		}
+		if (mode === "id") {
+			const num = tonumber(search);
+			if (num !== undefined && p.UserId === num) {
+				return p;
+			}
+		}
+	}
+
+	return undefined;
 }
