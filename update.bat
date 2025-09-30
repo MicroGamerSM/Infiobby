@@ -5,4 +5,4 @@ git checkout %BRANCH%
 
 git pull origin %BRANCH%
 
-npx roblox-ts -w
+npx roblox-ts
