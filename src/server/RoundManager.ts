@@ -3,6 +3,8 @@ import { TileSpawner } from "./TileSpawner";
 
 const Players = game.GetService("Players");
 
+type Disconnectable = RBXScriptConnection | (() => void);
+
 //#region Meta
 export enum RoundState {
 	LOBBY,
@@ -25,7 +27,7 @@ export class RoundManager {
 	private spawn: BasePart;
 	private spawner: TileSpawner;
 
-	private disconnectOnReset: RBXScriptConnection[] = [];
+	private disconnectOnReset: Disconnectable[] = [];
 
 	private rewards: Map<Player, RoundReward> = new Map();
 
@@ -93,9 +95,12 @@ export class RoundManager {
 	/** Enter RUNNING */
 	private enterRunning() {
 		this.spawner.AddTileToQueue(5);
-		this.spawner.ConnectToCheckpoint((player: Player, checkpoint: Model) => {
-			print(`${player} hit a checkpoint!`);
-		});
+		this.autodisconnect(
+			this.spawner.ConnectToCheckpoint((player: Player, checkpoint: Model) => {
+				print(`${player} hit a checkpoint!`);
+				// add more logic later
+			}),
+		);
 	}
 	/** Enter ENDING */
 	private enterEnding() {
@@ -109,7 +114,10 @@ export class RoundManager {
 	}
 	/** Enter RESETTING */
 	private enterResetting() {
-		this.disconnectOnReset.forEach((connection) => connection.Disconnect());
+		this.disconnectOnReset.forEach((connection) => {
+			if (typeIs(connection, "function")) connection();
+			else connection.Disconnect();
+		});
 		this.disconnectOnReset.clear();
 		this.rewards.clear();
 		this.spawner.Reset();
@@ -118,7 +126,7 @@ export class RoundManager {
 	//#endregion
 
 	//#region Other
-	private autodisconnect(...connections: RBXScriptConnection[]) {
+	private autodisconnect(...connections: Disconnectable[]) {
 		connections.forEach((connection) => {
 			this.disconnectOnReset.push(connection);
 		});
