@@ -1,5 +1,5 @@
 import { DebugContext, DebugModule } from "./DebugModule";
-import { GameVersionModule as GameVersionDebugModule } from "./Modules/GameVersionDebugModule";
+import { GameVersionDebugModule } from "./Modules/GameVersionDebugModule";
 
 const ActivationKey = Enum.KeyCode.F3;
 const Font = Enum.Font.RobotoMono;
