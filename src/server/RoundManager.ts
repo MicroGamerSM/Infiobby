@@ -3,6 +3,7 @@ import { TileSpawner } from "./TileSpawner";
 
 const Players = game.GetService("Players");
 
+//#region Meta
 export enum RoundState {
 	LOBBY,
 	COUNTDOWN,
@@ -17,6 +18,7 @@ interface RoundReward {
 	credits: number;
 	firstCheckpoints: number;
 }
+//#endregion
 
 export class RoundManager {
 	private activePlayers: Player[] = [];
