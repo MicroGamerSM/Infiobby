@@ -16,7 +16,8 @@ function HandleCommand(player: Player, command: string, ...args: string[]) {
 			const messageParts = args;
 			messageParts.remove(0);
 			let message = messageParts.join(" ");
-			if (message === "" || message === " ") message = "You were kicked by an administrator.";
+			if (message === "" || message === " " || message === undefined)
+				message = "You were kicked by an administrator.";
 			target?.Kick(message);
 			break;
 		}
