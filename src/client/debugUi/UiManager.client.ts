@@ -1,4 +1,5 @@
 import { DebugContext, DebugModule } from "./DebugModule";
+import { FramerateDebugModule } from "./Modules/FramerateDebugModule";
 import { GameVersionDebugModule } from "./Modules/GameVersionDebugModule";
 
 const ActivationKey = Enum.KeyCode.F3;
@@ -37,7 +38,7 @@ const LeftText = CreateDebugLabel(Enum.TextXAlignment.Left);
 const RightText = CreateDebugLabel(Enum.TextXAlignment.Right);
 
 const LeftModules: DebugModule[] = [new GameVersionDebugModule()];
-const RightModules: DebugModule[] = [];
+const RightModules: DebugModule[] = [new FramerateDebugModule()];
 
 let UiOpen: boolean = IsStudio;
 
