@@ -1,4 +1,4 @@
 export const VersionData = {
-	Branch: "dev-debugui",
-	Commit: 29,
+	Branch: "development",
+	Commit: 30,
 };
