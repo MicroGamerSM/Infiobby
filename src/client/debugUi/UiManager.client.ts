@@ -55,8 +55,8 @@ function SetUiVisibility() {
 	RightText.Visible = UiOpen;
 }
 
-RunService.PreRender.Connect((deltaTimeRender: number) => {
-	const Context: DebugContext = { FrameTime: deltaTimeRender, IsStudio: IsStudio };
+RunService.Heartbeat.Connect((deltaTime: number) => {
+	const Context: DebugContext = { FrameTime: deltaTime, IsStudio: IsStudio };
 
 	let LeftValue = "Debug GUI";
 	LeftModules.forEach((Module: DebugModule) => {
