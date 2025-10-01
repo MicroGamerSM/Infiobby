@@ -30,6 +30,8 @@ function CreateDebugLabel(
 	Label.TextXAlignment = xAnchor;
 	Label.TextYAlignment = yAnchor;
 	Label.Font = Font;
+	Label.TextSize = 18;
+	Label.TextColor3 = new Color3(1, 1, 1);
 	Label.Parent = Gui;
 	return Label;
 }
