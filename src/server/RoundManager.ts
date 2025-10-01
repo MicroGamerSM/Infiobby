@@ -30,6 +30,7 @@ export class RoundManager {
 	private disconnectOnReset: Disconnectable[] = [];
 
 	private rewards: Map<Player, RoundReward> = new Map();
+	private hitCheckpoints: Model[] = [];
 
 	//#region State Manager
 
@@ -97,8 +98,12 @@ export class RoundManager {
 		this.spawner.AddTileToQueue(5);
 		this.autodisconnect(
 			this.spawner.ConnectToCheckpoint((player: Player, checkpoint: Model) => {
-				print(`${player} hit a checkpoint!`);
-				// add more logic later
+				const FirstHit = this.hitCheckpoints.filter((value) => value === checkpoint).size() === 0;
+				if (FirstHit) {
+					this.hitCheckpoints.push(checkpoint);
+					this.TriggerCheckpointFirst(player);
+				}
+				this.TriggerCheckpoint(player);
 			}),
 		);
 	}
@@ -120,6 +125,7 @@ export class RoundManager {
 		});
 		this.disconnectOnReset.clear();
 		this.rewards.clear();
+		this.hitCheckpoints.clear();
 		this.spawner.Reset();
 		this.setState(RoundState.LOBBY);
 	}
@@ -142,10 +148,8 @@ export class RoundManager {
 		warn("NOT IMPLEMENTED: iM RoundManager.ApplyRewards(player: Player, reward: RoundReward)");
 		print(`${player} rewarded ${reward.xp} XP, ${reward.credits} credits`);
 	}
-	//#endregion
 
-	//#region Interface
-	TriggerCheckpointFirst(player: Player) {
+	private TriggerCheckpointFirst(player: Player) {
 		this.spawner.AddTileToQueue();
 
 		const reward = this.rewards.get(player);
@@ -155,7 +159,7 @@ export class RoundManager {
 		}
 		reward.firstCheckpoints++;
 	}
-	TriggerCheckpoint(player: Player) {
+	private TriggerCheckpoint(player: Player) {
 		const reward = this.rewards.get(player);
 		if (reward === undefined) {
 			warn(`${player} hit a checkpoint with no reward matrix!`);
