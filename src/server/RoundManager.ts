@@ -79,19 +79,7 @@ export class RoundManager {
 	}
 	/** Enter STARTING */
 	private enterStarting() {
-		this.activePlayers.forEach((player) => {
-			this.rewards.set(player, { xp: 5, credits: 1, firstCheckpoints: 0 });
-			this.autodisconnect(
-				player.GetPropertyChangedSignal("Parent").Once(() => {
-					RemoveFromArray(this.activePlayers, player);
-					this.onPlayerCountReduced();
-				}),
-				player.CharacterRemoving.Once(() => {
-					RemoveFromArray(this.activePlayers, player);
-					this.onPlayerCountReduced();
-				}),
-			);
-		});
+		this.activePlayers.forEach(this.SetupPlayer);
 	}
 	/** Enter RUNNING */
 	private enterRunning() {
@@ -132,6 +120,20 @@ export class RoundManager {
 	//#endregion
 
 	//#region Other
+	private SetupPlayer(player: Player) {
+		this.rewards.set(player, { xp: 5, credits: 1, firstCheckpoints: 0 });
+		this.autodisconnect(
+			player.GetPropertyChangedSignal("Parent").Once(() => {
+				RemoveFromArray(this.activePlayers, player);
+				this.onPlayerCountReduced();
+			}),
+			player.CharacterRemoving.Once(() => {
+				RemoveFromArray(this.activePlayers, player);
+				this.onPlayerCountReduced();
+			}),
+		);
+	}
+
 	private autodisconnect(...connections: Disconnectable[]) {
 		connections.forEach((connection) => {
 			this.disconnectOnReset.push(connection);
