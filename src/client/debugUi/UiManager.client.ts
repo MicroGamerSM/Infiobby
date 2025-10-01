@@ -9,9 +9,12 @@ const RunService = game.GetService("RunService");
 const Players = game.GetService("Players");
 
 const LocalPlayer = Players.LocalPlayer;
+const IsStudio = RunService.IsStudio();
 
 const Gui = new Instance("ScreenGui");
 Gui.ResetOnSpawn = false;
+Gui.DisplayOrder = 999999999;
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 Gui.Parent = LocalPlayer.WaitForChild("PlayerGui");
 
 function CreateDebugLabel(
@@ -36,7 +39,7 @@ const RightText = CreateDebugLabel(Enum.TextXAlignment.Right);
 const LeftModules: DebugModule[] = [new GameVersionDebugModule()];
 const RightModules: DebugModule[] = [];
 
-let UiOpen: boolean = RunService.IsStudio();
+let UiOpen: boolean = IsStudio;
 
 UserInputService.InputBegan.Connect((input: InputObject, gameProcessedEvent: boolean) => {
 	if (gameProcessedEvent) return;
@@ -52,7 +55,7 @@ function SetUiVisibility() {
 }
 
 RunService.PreRender.Connect((deltaTimeRender: number) => {
-	const Context: DebugContext = { FrameTime: deltaTimeRender };
+	const Context: DebugContext = { FrameTime: deltaTimeRender, IsStudio: IsStudio };
 
 	let LeftValue = "";
 	LeftModules.forEach((Module: DebugModule) => {

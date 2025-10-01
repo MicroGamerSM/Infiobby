@@ -4,4 +4,5 @@ export interface DebugModule {
 
 export interface DebugContext {
 	FrameTime: number;
+	IsStudio: boolean;
 }
