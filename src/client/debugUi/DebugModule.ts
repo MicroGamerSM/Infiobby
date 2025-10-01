@@ -3,7 +3,5 @@ export interface DebugModule {
 }
 
 export interface DebugContext {
-	Branch: string;
-	Version: string;
 	FrameTime: number;
 }

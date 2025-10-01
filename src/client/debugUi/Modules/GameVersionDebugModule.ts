@@ -1,7 +1,9 @@
+import { VersionData } from "shared/VersionData";
 import { DebugContext, DebugModule } from "../DebugModule";
 
 export class GameVersionDebugModule implements DebugModule {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	Evaluate(context: DebugContext): string {
-		return `${context.Branch} V${context.Version}`;
+		return `${VersionData.Branch}`;
 	}
 }

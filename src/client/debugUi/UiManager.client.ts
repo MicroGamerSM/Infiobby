@@ -52,7 +52,7 @@ function SetUiVisibility() {
 }
 
 RunService.PreRender.Connect((deltaTimeRender: number) => {
-	const Context: DebugContext = { FrameTime: deltaTimeRender, Branch: "dev-debugui", Version: "0.0.0.0LIVE" };
+	const Context: DebugContext = { FrameTime: deltaTimeRender };
 
 	let LeftValue = "";
 	LeftModules.forEach((Module: DebugModule) => {
