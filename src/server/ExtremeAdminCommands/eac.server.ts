@@ -1,6 +1,5 @@
+import { Players } from "@rbxts/services";
 import { StartsWith, RemovePrefix, StringToPlayer } from "shared/util";
-
-const Players = game.GetService("Players");
 
 const adminIds: number[] = [5742671914];
 const prefix: string = "!";
