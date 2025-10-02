@@ -1,13 +1,10 @@
+import { Players, RunService, UserInputService } from "@rbxts/services";
 import { DebugContext, DebugModule } from "./DebugModule";
 import { FramerateDebugModule } from "./Modules/FramerateDebugModule";
 import { GameVersionDebugModule } from "./Modules/GameVersionDebugModule";
 
 const ActivationKey = Enum.KeyCode.F3;
 const Font = Enum.Font.RobotoMono;
-
-const UserInputService = game.GetService("UserInputService");
-const RunService = game.GetService("RunService");
-const Players = game.GetService("Players");
 
 const LocalPlayer = Players.LocalPlayer;
 const IsStudio = RunService.IsStudio();

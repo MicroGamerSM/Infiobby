@@ -1,7 +1,5 @@
+import { Players, TextService } from "@rbxts/services";
 import { Possible } from "./types";
-
-const Players = game.GetService("Players");
-const TextService = game.GetService("TextService");
 
 export function WaitUntil(predicate: () => boolean) {
 	while (!predicate()) {

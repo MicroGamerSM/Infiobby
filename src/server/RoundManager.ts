@@ -1,7 +1,6 @@
 import { RemoveFromArray } from "shared/util";
 import { TileSpawner } from "./TileSpawner";
-
-const Players = game.GetService("Players");
+import { Players } from "@rbxts/services";
 
 type Disconnectable = RBXScriptConnection | (() => void);
 

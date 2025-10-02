@@ -1,8 +1,6 @@
 //#region Setup
+import { ReplicatedStorage, RunService } from "@rbxts/services";
 import { SuccessCase } from "./SuccessCase";
-
-const ReplicatedStorage = game.GetService("ReplicatedStorage");
-const RunService = game.GetService("RunService");
 
 const isServer = RunService.IsServer();
 const isClient = RunService.IsClient();
