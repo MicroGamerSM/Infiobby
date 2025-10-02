@@ -1,4 +1,4 @@
-import { RemoveFromArray } from "shared/util";
+import { GetPlayersInZone, RemoveFromArray } from "shared/util";
 import { TileSpawner } from "./TileSpawner";
 import { Players } from "@rbxts/services";
 
@@ -25,6 +25,7 @@ export class RoundManager {
 	private activePlayers: Player[] = [];
 	private spawn: BasePart;
 	private spawner: TileSpawner;
+	private joinBox: BasePart;
 
 	private disconnectOnReset: Disconnectable[] = [];
 
@@ -74,7 +75,10 @@ export class RoundManager {
 	private enterLobby() {}
 	/** Players are waiting for the countdown in the lobby */
 	private enterCountdown() {
-		task.delay(15, () => this.setState(RoundState.STARTING));
+		task.delay(15, () => {
+			this.activePlayers = GetPlayersInZone(this.joinBox);
+			this.setState(RoundState.STARTING);
+		});
 	}
 	/** Players are beggining the race (countdown 2 electric boogaloo) */
 	private enterStarting() {
@@ -169,8 +173,9 @@ export class RoundManager {
 	}
 	//#endregion
 
-	constructor(spawn: BasePart, spawner: TileSpawner) {
+	constructor(spawn: BasePart, joinBox: BasePart, spawner: TileSpawner) {
 		this.spawn = spawn;
+		this.joinBox = joinBox;
 		this.spawner = spawner;
 	}
 }
