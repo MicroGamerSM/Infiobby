@@ -70,19 +70,19 @@ export class RoundManager {
 	//#endregion
 
 	//#region State Machine
-	/** Enter LOBBY */
+	/** Players are in the lobby */
 	private enterLobby() {}
-	/** Enter COUNTDOWN */
+	/** Players are waiting for the countdown in the lobby */
 	private enterCountdown() {
 		task.delay(15, () => this.setState(RoundState.STARTING));
 	}
-	/** Enter STARTING */
+	/** Players are beggining the race (countdown 2 electric boogaloo) */
 	private enterStarting() {
 		this.activePlayers.forEach((value: Player) => this.SetupPlayer(value));
 	}
-	/** Enter RUNNING */
+	/** Players are racing */
 	private enterRunning() {
-		this.spawner.AddTileToQueue(5);
+		this.spawner.AddTileToQueue(10);
 		this.autodisconnect(
 			this.spawner.ConnectToCheckpoint((player: Player, checkpoint: Model) => {
 				const FirstHit = this.hitCheckpoints.filter((value) => value === checkpoint).size() === 0;
@@ -94,7 +94,7 @@ export class RoundManager {
 			}),
 		);
 	}
-	/** Enter ENDING */
+	/** Players are no longer racing */
 	private enterEnding() {
 		this.rewards.forEach((reward, player) => {
 			if (player.Parent !== Players) {
@@ -104,7 +104,7 @@ export class RoundManager {
 			this.ApplyRewards(player, reward);
 		});
 	}
-	/** Enter RESETTING */
+	/** The server is resetting */
 	private enterResetting() {
 		this.disconnectOnReset.forEach((connection) => {
 			if (typeIs(connection, "function")) connection();
