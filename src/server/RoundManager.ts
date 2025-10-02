@@ -1,7 +1,6 @@
-import { RemoveFromArray } from "shared/util";
+import { GetPlayersInZone, RemoveFromArray } from "shared/util";
 import { TileSpawner } from "./TileSpawner";
-
-const Players = game.GetService("Players");
+import { Players } from "@rbxts/services";
 
 type Disconnectable = RBXScriptConnection | (() => void);
 
@@ -26,10 +25,12 @@ export class RoundManager {
 	private activePlayers: Player[] = [];
 	private spawn: BasePart;
 	private spawner: TileSpawner;
+	private joinBox: BasePart;
 
 	private disconnectOnReset: Disconnectable[] = [];
 
 	private rewards: Map<Player, RoundReward> = new Map();
+	private hitCheckpoints: Model[] = [];
 
 	//#region State Manager
 
@@ -70,39 +71,34 @@ export class RoundManager {
 	//#endregion
 
 	//#region State Machine
-	/** Enter LOBBY */
+	/** Players are in the lobby */
 	private enterLobby() {}
-	/** Enter COUNTDOWN */
+	/** Players are waiting for the countdown in the lobby */
 	private enterCountdown() {
-		task.delay(15, () => this.setState(RoundState.STARTING));
-	}
-	/** Enter STARTING */
-	private enterStarting() {
-		this.activePlayers.forEach((player) => {
-			this.rewards.set(player, { xp: 5, credits: 1, firstCheckpoints: 0 });
-			this.autodisconnect(
-				player.GetPropertyChangedSignal("Parent").Once(() => {
-					RemoveFromArray(this.activePlayers, player);
-					this.onPlayerCountReduced();
-				}),
-				player.CharacterRemoving.Once(() => {
-					RemoveFromArray(this.activePlayers, player);
-					this.onPlayerCountReduced();
-				}),
-			);
+		task.delay(15, () => {
+			this.activePlayers = GetPlayersInZone(this.joinBox);
+			this.setState(RoundState.STARTING);
 		});
 	}
-	/** Enter RUNNING */
+	/** Players are beggining the race (countdown 2 electric boogaloo) */
+	private enterStarting() {
+		this.activePlayers.forEach((value: Player) => this.SetupPlayer(value));
+	}
+	/** Players are racing */
 	private enterRunning() {
-		this.spawner.AddTileToQueue(5);
+		this.spawner.AddTileToQueue(10);
 		this.autodisconnect(
 			this.spawner.ConnectToCheckpoint((player: Player, checkpoint: Model) => {
-				print(`${player} hit a checkpoint!`);
-				// add more logic later
+				const FirstHit = this.hitCheckpoints.filter((value) => value === checkpoint).size() === 0;
+				if (FirstHit) {
+					this.hitCheckpoints.push(checkpoint);
+					this.TriggerCheckpointFirst(player);
+				}
+				this.TriggerCheckpoint(player);
 			}),
 		);
 	}
-	/** Enter ENDING */
+	/** Players are no longer racing */
 	private enterEnding() {
 		this.rewards.forEach((reward, player) => {
 			if (player.Parent !== Players) {
@@ -112,7 +108,7 @@ export class RoundManager {
 			this.ApplyRewards(player, reward);
 		});
 	}
-	/** Enter RESETTING */
+	/** The server is resetting */
 	private enterResetting() {
 		this.disconnectOnReset.forEach((connection) => {
 			if (typeIs(connection, "function")) connection();
@@ -120,12 +116,27 @@ export class RoundManager {
 		});
 		this.disconnectOnReset.clear();
 		this.rewards.clear();
+		this.hitCheckpoints.clear();
 		this.spawner.Reset();
 		this.setState(RoundState.LOBBY);
 	}
 	//#endregion
 
 	//#region Other
+	private SetupPlayer(player: Player) {
+		this.rewards.set(player, { xp: 5, credits: 1, firstCheckpoints: 0 });
+		this.autodisconnect(
+			player.GetPropertyChangedSignal("Parent").Once(() => {
+				RemoveFromArray(this.activePlayers, player);
+				this.onPlayerCountReduced();
+			}),
+			player.CharacterRemoving.Once(() => {
+				RemoveFromArray(this.activePlayers, player);
+				this.onPlayerCountReduced();
+			}),
+		);
+	}
+
 	private autodisconnect(...connections: Disconnectable[]) {
 		connections.forEach((connection) => {
 			this.disconnectOnReset.push(connection);
@@ -142,10 +153,8 @@ export class RoundManager {
 		warn("NOT IMPLEMENTED: iM RoundManager.ApplyRewards(player: Player, reward: RoundReward)");
 		print(`${player} rewarded ${reward.xp} XP, ${reward.credits} credits`);
 	}
-	//#endregion
 
-	//#region Interface
-	TriggerCheckpointFirst(player: Player) {
+	private TriggerCheckpointFirst(player: Player) {
 		this.spawner.AddTileToQueue();
 
 		const reward = this.rewards.get(player);
@@ -155,7 +164,7 @@ export class RoundManager {
 		}
 		reward.firstCheckpoints++;
 	}
-	TriggerCheckpoint(player: Player) {
+	private TriggerCheckpoint(player: Player) {
 		const reward = this.rewards.get(player);
 		if (reward === undefined) {
 			warn(`${player} hit a checkpoint with no reward matrix!`);
@@ -164,8 +173,9 @@ export class RoundManager {
 	}
 	//#endregion
 
-	constructor(spawn: BasePart, spawner: TileSpawner) {
+	constructor(spawn: BasePart, joinBox: BasePart, spawner: TileSpawner) {
 		this.spawn = spawn;
+		this.joinBox = joinBox;
 		this.spawner = spawner;
 	}
 }

@@ -1,13 +1,10 @@
+import { Players, RunService, UserInputService } from "@rbxts/services";
 import { DebugContext, DebugModule } from "./DebugModule";
 import { FramerateDebugModule } from "./Modules/FramerateDebugModule";
 import { GameVersionDebugModule } from "./Modules/GameVersionDebugModule";
 
 const ActivationKey = Enum.KeyCode.F3;
 const Font = Enum.Font.RobotoMono;
-
-const UserInputService = game.GetService("UserInputService");
-const RunService = game.GetService("RunService");
-const Players = game.GetService("Players");
 
 const LocalPlayer = Players.LocalPlayer;
 const IsStudio = RunService.IsStudio();
@@ -30,6 +27,8 @@ function CreateDebugLabel(
 	Label.TextXAlignment = xAnchor;
 	Label.TextYAlignment = yAnchor;
 	Label.Font = Font;
+	Label.TextSize = 18;
+	Label.TextColor3 = new Color3(1, 1, 1);
 	Label.Parent = Gui;
 	return Label;
 }
@@ -55,10 +54,10 @@ function SetUiVisibility() {
 	RightText.Visible = UiOpen;
 }
 
-RunService.PreRender.Connect((deltaTimeRender: number) => {
-	const Context: DebugContext = { FrameTime: deltaTimeRender, IsStudio: IsStudio };
+RunService.Heartbeat.Connect((deltaTime: number) => {
+	const Context: DebugContext = { FrameTime: deltaTime, IsStudio: IsStudio };
 
-	let LeftValue = "";
+	let LeftValue = "Debug GUI";
 	LeftModules.forEach((Module: DebugModule) => {
 		LeftValue += "\n" + Module.Evaluate(Context);
 	});

@@ -9,7 +9,7 @@ export class Tile {
 	weight: number;
 	polarity: Polarity;
 
-	Initialize(): Model {
+	Initialize(context: { [key: string]: unknown } = {}): Model {
 		const part = this.component.Clone();
 		const module: Possible<ModuleScript> = part.FindFirstChildOfClass("ModuleScript");
 		if (module !== undefined) {
@@ -17,7 +17,7 @@ export class Tile {
 			// eslint-disable-next-line @typescript-eslint/no-require-imports
 			const setup: unknown = require(module);
 			if (typeIs(setup, "function")) {
-				setup();
+				setup(context);
 			}
 		}
 		return part;
@@ -85,7 +85,5 @@ export function PullTile(currentPolarity: Polarity, tileset: TilePool): [Polarit
 		return PullTile(currentPolarity, tileset);
 	}
 }
-
-export const tiles = [new Tile("Jumps", 4)];
 
 export type TilePool = Tile[];

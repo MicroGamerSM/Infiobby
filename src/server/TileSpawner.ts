@@ -1,7 +1,6 @@
+import { TweenService } from "@rbxts/services";
 import { Polarity, PullTile, Tile, TilePool } from "shared/Tiles";
 import { RemoveFromArray } from "shared/util";
-
-const TweenService = game.GetService("TweenService");
 
 export type CheckpointHitArguments = [Player, Model];
 
@@ -89,7 +88,12 @@ export class TileSpawner {
 	}
 
 	private SpawnCheckpoint() {
-		this.SpawnTile(this.checkpoint.Initialize());
+		const model = this.checkpoint.Initialize({
+			OnHit: (player: Player) => {
+				this.onCheckpointConnections.forEach((connection) => connection(player, model));
+			},
+		});
+		this.SpawnTile(model);
 	}
 
 	AddTileToQueue(count: number = 1) {
