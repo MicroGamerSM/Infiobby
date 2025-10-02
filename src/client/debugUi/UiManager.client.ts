@@ -5,13 +5,13 @@ import { GameVersionDebugModule } from "./Modules/GameVersionDebugModule";
 
 const ActivationKey = Enum.KeyCode.F3;
 const Font = Enum.Font.RobotoMono;
+const TicksPerUpdate = 20;
 
 const LocalPlayer = Players.LocalPlayer;
 const IsStudio = RunService.IsStudio();
 
 const Gui = new Instance("ScreenGui");
 Gui.ResetOnSpawn = false;
-Gui.DisplayOrder = 999999999;
 Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 Gui.Parent = LocalPlayer.WaitForChild("PlayerGui");
 
@@ -54,7 +54,12 @@ function SetUiVisibility() {
 	RightText.Visible = UiOpen;
 }
 
+let tick = 0;
 RunService.Heartbeat.Connect((deltaTime: number) => {
+	tick++;
+	if (tick < TicksPerUpdate) return;
+	tick -= TicksPerUpdate;
+
 	const Context: DebugContext = { FrameTime: deltaTime, IsStudio: IsStudio };
 
 	let LeftValue = "Debug GUI";
