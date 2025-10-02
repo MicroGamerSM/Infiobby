@@ -79,7 +79,7 @@ export class RoundManager {
 	}
 	/** Enter STARTING */
 	private enterStarting() {
-		this.activePlayers.forEach(this.SetupPlayer);
+		this.activePlayers.forEach((value: Player) => this.SetupPlayer(value));
 	}
 	/** Enter RUNNING */
 	private enterRunning() {
