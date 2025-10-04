@@ -177,5 +177,12 @@ export class RoundManager {
 		this.spawn = spawn;
 		this.joinBox = joinBox;
 		this.spawner = spawner;
+
+		joinBox.Touched.Connect(() => {
+			if (GetPlayersInZone(joinBox).size() >= 1) this.setState(RoundState.COUNTDOWN);
+		});
+		joinBox.TouchEnded.Connect(() => {
+			if (GetPlayersInZone(joinBox).size() < 1 && this.state === RoundState.COUNTDOWN) this.setState(RoundState.LOBBY);
+		});
 	}
 }
