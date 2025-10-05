@@ -93,3 +93,19 @@ export function CensorString(source: Player, target: Player, value: string): str
 		Enum.TextFilterContext.PrivateChat,
 	).GetNonChatStringForUserAsync(target.UserId);
 }
+
+export function CancelableDelay(seconds: number, callback: () => void) {
+	let cancelled = false;
+
+	const cancel = () => {
+		cancelled = true;
+	};
+
+	task.delay(seconds, () => {
+		if (!cancelled) {
+			callback();
+		}
+	});
+
+	return { cancel };
+}

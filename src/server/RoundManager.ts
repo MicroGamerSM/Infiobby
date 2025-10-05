@@ -1,6 +1,7 @@
-import { GetPlayersInZone, RemoveFromArray } from "shared/util";
+import { CancelableDelay, GetPlayersInZone, RemoveFromArray } from "shared/util";
 import { TileSpawner } from "./TileSpawner";
 import { Players } from "@rbxts/services";
+import { Possible } from "shared/types";
 
 type Disconnectable = RBXScriptConnection | (() => void);
 
@@ -22,6 +23,8 @@ interface RoundReward {
 //#endregion
 
 export class RoundManager {
+	minimumPlayers: number;
+
 	private activePlayers: Player[] = [];
 	private spawn: BasePart;
 	private spawner: TileSpawner;
@@ -32,6 +35,8 @@ export class RoundManager {
 	private rewards: Map<Player, RoundReward> = new Map();
 	private hitCheckpoints: Model[] = [];
 
+	private countdown: Possible<{ cancel: () => void }> = undefined;
+
 	//#region State Manager
 
 	private state: RoundState = RoundState.LOBBY;
@@ -39,6 +44,12 @@ export class RoundManager {
 
 	public setState(newState: RoundState) {
 		print(`Transitioning from ${RoundState[this.state]} → ${RoundState[newState]}`);
+
+		switch (this.state) {
+			case RoundState.COUNTDOWN:
+				this.exitCountdown();
+		}
+
 		this.state = newState;
 		this.stateChanged.Fire(newState);
 
@@ -70,12 +81,16 @@ export class RoundManager {
 
 	//#endregion
 
+	private exitCountdown() {
+		this.countdown?.cancel();
+	}
+
 	//#region State Machine
 	/** Players are in the lobby */
 	private enterLobby() {}
 	/** Players are waiting for the countdown in the lobby */
 	private enterCountdown() {
-		task.delay(15, () => {
+		this.countdown = CancelableDelay(15, () => {
 			this.activePlayers = GetPlayersInZone(this.joinBox);
 			this.setState(RoundState.STARTING);
 		});
@@ -173,16 +188,19 @@ export class RoundManager {
 	}
 	//#endregion
 
-	constructor(spawn: BasePart, joinBox: BasePart, spawner: TileSpawner) {
+	constructor(spawn: BasePart, joinBox: BasePart, spawner: TileSpawner, minimumPlayers: number = 3) {
 		this.spawn = spawn;
 		this.joinBox = joinBox;
 		this.spawner = spawner;
+		this.minimumPlayers = minimumPlayers;
 
 		joinBox.Touched.Connect(() => {
-			if (GetPlayersInZone(joinBox).size() >= 1) this.setState(RoundState.COUNTDOWN);
+			if (GetPlayersInZone(joinBox).size() >= this.minimumPlayers && this.state === RoundState.LOBBY)
+				this.setState(RoundState.COUNTDOWN);
 		});
 		joinBox.TouchEnded.Connect(() => {
-			if (GetPlayersInZone(joinBox).size() < 1 && this.state === RoundState.COUNTDOWN) this.setState(RoundState.LOBBY);
+			if (GetPlayersInZone(joinBox).size() < this.minimumPlayers && this.state === RoundState.COUNTDOWN)
+				this.setState(RoundState.LOBBY);
 		});
 	}
 }
